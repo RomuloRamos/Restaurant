@@ -27,7 +27,7 @@ public class MenuSearchServlet extends HttpServlet {
 		
 		if (menuItems.size() > 0) {
 		
-			out.println("<html><body><h1>Caiçara's</h1>");
+			out.println("<html><body><h1>CaiÃ§ara's</h1>");
 			out.println("<h2>Dishes containing " + searchTerm + "</h2><ul>");
 			for (MenuItem menuItem : menuItems) {
 				out.println("<li>" + menuItem + " " + menuItem.getDescription() + "</li>");
@@ -36,7 +36,7 @@ public class MenuSearchServlet extends HttpServlet {
 			out.println("</ul></body></html>");
 		}
 		else {
-			out.println("<html><body><h1>Caiçara's Restaurant</h1>");
+			out.println("<html><body><h1>CaiÃ§ara's Restaurant</h1>");
 			out.println("<p>I'm sorry, there are no dishes containing " + searchTerm);
 			out.println("</p></body></html>");
 		}

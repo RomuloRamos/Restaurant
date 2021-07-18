@@ -13,7 +13,7 @@ import com.virtualpairprogrammers.data.MenuDao;
 import com.virtualpairprogrammers.data.MenuDaoFactory;
 import com.virtualpairprogrammers.domain.MenuItem;
 
-@WebServlet("/")
+@WebServlet("")
 public class ViewMenuServlet extends HttpServlet {
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -23,7 +23,7 @@ public class ViewMenuServlet extends HttpServlet {
 		MenuDao menuDao = MenuDaoFactory.getMenuDao();
 		List<MenuItem> menuItems = menuDao.getFullMenu();
 		
-		out.println("<html><body><h1>Caiçara's Restaurant</h1>");
+		out.println("<html><body><h1>CaiÃ§ara's Restaurant</h1>");
 		out.println("<h2>Menu</h2><ul>");
 		for (MenuItem menuItem : menuItems) {
 			out.println("<li>" + menuItem + "</li>");

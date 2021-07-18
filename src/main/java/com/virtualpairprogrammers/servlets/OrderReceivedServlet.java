@@ -26,7 +26,7 @@ public class OrderReceivedServlet extends HttpServlet {
 			 try  
 			  {  
 			    int q = Integer.parseInt(quantity);
-			    if (q > 0) {
+			   if (q > 0) {
 			    	menuDao.addToOrder(order.getId(), menuDao.getItem(i), q);
 			    	order.addToOrder(menuDao.getItem(i), q);
 			    }
