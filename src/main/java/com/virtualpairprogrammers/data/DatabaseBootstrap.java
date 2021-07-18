@@ -1,19 +1,19 @@
 package com.virtualpairprogrammers.data;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.virtualpairprogrammers.domain.MenuCategory;
 import com.virtualpairprogrammers.domain.MenuItem;
 
-public class MenuDataService {
-
-	List<MenuItem> menuItems = new ArrayList<MenuItem>();
-	Map<MenuItem,Integer> currentOrder = new HashMap<MenuItem,Integer>();
+public class DatabaseBootstrap {
 	
-	public MenuDataService() {
+	private List<MenuItem> getMenuItemsList() {
+		List<MenuItem> menuItems= new ArrayList<MenuItem>();
 		menuItems.add(new MenuItem(1, "Soup of the day (v)", "A delicious soup made from the chef's choice of vegetables. Served with a home baked bread roll.", MenuCategory.STARTER, 4.99));
 		menuItems.add(new MenuItem(2, "Asparagus filo parcels (v)", "Fresh seasonal asparagus, wrapped in a light filo pastry, served with a chilli dipping sauce.", MenuCategory.STARTER, 6.99));
 		menuItems.add(new MenuItem(3, "Chicken Terrine", "Our terrine tastes of summer! We use only the finest organic chicken. Served with a mixed leaf salad. (contains nuts)", MenuCategory.STARTER, 5.99));
@@ -25,38 +25,41 @@ public class MenuDataService {
 		menuItems.add(new MenuItem(9, "Fruit skewers", "Our nostalgic 80s desert is super healthy... then we add luxurious vanilla ice-cream and chocolate sauce. ", MenuCategory.DESERT, 6.99));
 		menuItems.add(new MenuItem(10, "Coffee", "Espresso, Americano, Latte or Capuccino? Tell us how you like it!", MenuCategory.DRINK, 2.99));
 		menuItems.add(new MenuItem(11, "Tea", "We have a full range of classic and herbal teas.", MenuCategory.DRINK, 2.99));	
-	}
-	
-	public List<MenuItem>  getFullMenu() {
 		return menuItems;
 	}
-	
-	public List<MenuItem> find(String searchString) {
-		List<MenuItem> results = new ArrayList<MenuItem>();
-		for (MenuItem menuItem : menuItems) {
-			if (menuItem.getName().toLowerCase().contains(searchString.toLowerCase()) || menuItem.getDescription().toLowerCase().contains(searchString.toLowerCase())) {
-				results.add(menuItem);
-			}
+
+	public void initializeDatabase() {
+		try (Connection conn = DriverManager.getConnection("jdbc:h2:~/restaurant","","");) {
+			
+				try (PreparedStatement prepStm = conn.prepareStatement("DROP TABLE IF EXISTS menuitems;")) {
+					prepStm.execute();
+				}
+				
+				try (PreparedStatement prepStm = conn.prepareStatement("DROP TABLE IF EXISTS orders;")) {
+					prepStm.execute();
+				}
+				
+				try (PreparedStatement prepStm = conn.prepareStatement("CREATE TABLE menuitems (id int primary key, name varchar(30), description varchar(150), category varchar(30), price float);")) {
+					prepStm.execute();
+				}
+				
+				List<MenuItem> menuItems = getMenuItemsList();
+				for (MenuItem menuItem : menuItems) {
+					try (PreparedStatement prepStm = conn.prepareStatement("INSERT INTO menuitems (id, name, description, category, price) values (?,?,?,?,?);");) {
+						prepStm.setInt(1, menuItem.getId());
+						prepStm.setString(2, menuItem.getName());
+						prepStm.setString(3, menuItem.getDescription());
+						prepStm.setString(4, menuItem.getCategory().toString());
+						prepStm.setDouble(5, menuItem.getPrice());
+						prepStm.execute();
+					}
+				}	
+				
+				try (PreparedStatement prepStm = conn.prepareStatement("CREATE TABLE orders (id int auto_increment primary key, customer varchar(30), contents varchar(255), status varchar(20));")) {
+					prepStm.execute();
+				}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		
-		return results;
-	}
-	
-	public MenuItem getItem(int id) {
-		return menuItems.get(id);
-	}
-	
-	public void addToOrder(MenuItem menuItem, int quantity) {
-		int currentQuantity = 0;
-		if (currentOrder.get(menuItem) != null) currentQuantity = currentOrder.get(menuItem);
-		currentOrder.put(menuItem, currentQuantity + quantity);
-	}
-	
-	public Double getOrderTotal() {
-		double d = 0d;
-		for (MenuItem menuItem : currentOrder.keySet()) {
-			d += currentOrder.get(menuItem) * menuItem.getPrice();
-		}
-		return d;
 	}
 }

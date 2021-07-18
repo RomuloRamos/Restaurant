@@ -18,14 +18,15 @@ public class Main {
 
         StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
         
-        File additionWebInfClasses = new File("target/classes");
+        File additionWebInfClasses = new File("target/classes"); 
         WebResourceRoot resources = new StandardRoot(ctx);
         resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes",
                 additionWebInfClasses.getAbsolutePath(), "/"));
         ctx.setResources(resources);
-
-        tomcat.addUser("romulo", "senha");
-        tomcat.addRole("romulo", "user");
+        
+        tomcat.addUser("matt", "pass");
+        tomcat.addRole("matt", "user");
+        
         tomcat.start();
         tomcat.getServer().await();
     }
